@@ -14,6 +14,16 @@ let score = {
     overs: 0,
 }
 
+// Serve the main score page
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/client2.html');
+});
+
+// Serve the admin panel
+app.get('/admin', (req, res) => {
+    res.sendFile(__dirname + '/admin.html');
+});
+
 io.on('connection', socket => {
     console.log('A user connected')
     // Send current score to newly connected client

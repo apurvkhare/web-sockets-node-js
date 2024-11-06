@@ -1,8 +1,8 @@
-## WebSockets in Node.js: An In-Depth Look
+## WebSockets
 
 ### 1. Introduction
 
-WebSockets are a protocol that enables full-duplex, bidirectional communication between a client (typically a web browser) and a server. Unlike traditional HTTP requests, WebSockets maintain a persistent connection, allowing real-time data exchange with minimal overhead.
+WebSockets is a protocol that enables full-duplex, bidirectional communication between a client (typically a web browser) and a server. Unlike traditional HTTP requests, WebSockets maintain a persistent connection, allowing real-time data exchange with minimal overhead.
 
 Key advantages:
 
@@ -151,7 +151,7 @@ npm install socket.io
 
 Let's create a simple live cricket match score application using Socket.IO. We'll have a server that updates the score and clients that receive these updates in real-time.
 
-#### Server-side code (app.js):
+#### Server-side code (server.js):
 
 ```js
 const express = require('express')
@@ -169,6 +169,16 @@ let score = {
     wickets: 0,
     overs: 0,
 }
+
+// Serve the main score page
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/client2.html');
+});
+
+// Serve the admin panel
+app.get('/admin', (req, res) => {
+    res.sendFile(__dirname + '/admin.html');
+});
 
 io.on('connection', socket => {
     console.log('A user connected')
@@ -191,9 +201,10 @@ const PORT = process.env.PORT || 3000
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+
 ```
 
-#### Client-side code (index.html):
+#### Client-side code (client2.html):
 
 ```html
 <!DOCTYPE html>
@@ -211,22 +222,39 @@ http.listen(PORT, () => {
             Wickets: <span id="wickets">0</span><br />
             Overs: <span id="overs">0</span>
         </div>
-        <div id="admin" style="margin-top: 20px;">
-            <h2>Admin Panel</h2>
-            <input type="number" id="runsInput" placeholder="Runs" min="0" />
-            <input type="number" id="wicketsInput" placeholder="Wickets" min="0"/>
-            <input type="number" id="oversInput" placeholder="Overs" min="0"/>
-            <button onclick="updateScore()">Update Score</button>
-        </div>
-        <script>
-            const socket = io('http://localhost:3000')
 
+        <script>
+            const socket = io('http://127.0.0.1:3000')
             socket.on('score update', score => {
                 document.getElementById('runs').textContent = score.runs
                 document.getElementById('wickets').textContent = score.wickets
                 document.getElementById('overs').textContent = score.overs
             })
+        </script>
+    </body>
+</html> 
+```
 
+#### Client-side code (admin.html):
+
+```js
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Panel - Live Cricket Score</title>
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    </head>
+    <body>
+        <h1>Admin Panel</h1>
+        <input type="number" id="runsInput" placeholder="Runs" />
+        <input type="number" id="wicketsInput" placeholder="Wickets" />
+        <input type="number" id="oversInput" placeholder="Overs" />
+        <button onclick="updateScore()">Update Score</button>
+
+        <script>
+            const socket = io('http://127.0.0.1:3000')
             function updateScore() {
                 const newScore = {
                     runs:
@@ -245,7 +273,7 @@ http.listen(PORT, () => {
             }
         </script>
     </body>
-</html>
+</html> 
 ```
 
 ### 6. Best Practices and Security Considerations

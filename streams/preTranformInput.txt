@@ -1,0 +1,1 @@
+this is a sample input file with all the letters in lowercase
